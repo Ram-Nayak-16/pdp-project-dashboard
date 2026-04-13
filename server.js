@@ -47,6 +47,16 @@ app.get('/run', (req, res) => {
     });
 });
 
+app.get('/health', (req, res) => {
+    res.json({
+        status: 'UP',
+        timestamp: new Date().toISOString(),
+        platform: process.platform,
+        binary: binaryName,
+        version: '1.2.0'
+    });
+});
+
 app.listen(port, () => {
     console.log(`=================================================`);
     console.log(` Dashboard server running at port: ${port}`);
