@@ -16,8 +16,8 @@
 
 using namespace std;
 
-// Threshold for parallel execution (overhead of threads vs computation)
-const int PARALLEL_THRESHOLD = 250;
+// Threshold for parallel execution (adjusted to 1200 to avoid throttled CPU overhead)
+const int PARALLEL_THRESHOLD = 1200;
 
 // Structure to pass data to threads (for Windows fallback)
 struct ThreadData {
