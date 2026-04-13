@@ -1,0 +1,25 @@
+{
+  "name": "pdp-project",
+  "version": "1.0.0",
+  "description": "Universal Parallel Matrix Multiplication Dashboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "g++ -O3 -fopenmp matrix_mul.cpp -o matrix_mul",
+    "build:win": "g++ -O3 matrix_mul.cpp -o matrix_mul.exe",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "parallel",
+    "matrix",
+    "multiplication",
+    "performance",
+    "multi-platform"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

@@ -1,0 +1,7 @@
+node_modules/
+*.exe
+matrix_mul
+dist/
+.env
+.vscode/
+package-lock.json

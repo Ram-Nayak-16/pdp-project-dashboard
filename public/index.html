@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parallel Matrix Multiplier Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="glass-background"></div>
+    <div class="container">
+        <header>
+            <h1>Parallel Multiplier <span class="accent">Dashboard</span></h1>
+            <p class="subtitle">High-Performance Computing Matrix Benchmarker</p>
+        </header>
+
+        <main>
+            <section class="control-panel glass-card">
+                <div class="input-group">
+                    <label for="matrixSize">Matrix Size (N x N)</label>
+                    <input type="number" id="matrixSize" value="600" min="100" max="2000" step="100">
+                </div>
+                <button id="runBtn" class="primary-btn">
+                    <span class="btn-text">Run Benchmark</span>
+                    <div class="loader" id="btnLoader"></div>
+                </button>
+            </section>
+
+            <section class="metrics-grid">
+                <div class="metric-card glass-card animate-up" style="--delay: 0.1s">
+                    <div class="metric-label">Sequential Time</div>
+                    <div class="metric-value" id="seqTime">-</div>
+                    <div class="metric-unit">seconds</div>
+                </div>
+                <div class="metric-card glass-card animate-up" style="--delay: 0.2s">
+                    <div class="metric-label">Parallel Time</div>
+                    <div class="metric-value accent" id="parTime">-</div>
+                    <div class="metric-unit">seconds</div>
+                </div>
+                <div class="metric-card glass-card animate-up" style="--delay: 0.3s">
+                    <div class="metric-label">Speedup Factor</div>
+                    <div class="metric-value" id="speedup">-</div>
+                    <div class="metric-unit">x faster</div>
+                </div>
+                <div class="metric-card glass-card animate-up" style="--delay: 0.4s">
+                    <div class="metric-label">Efficiency</div>
+                    <div class="metric-value" id="efficiency">-</div>
+                    <div class="metric-unit">percentage</div>
+                </div>
+            </section>
+
+            <section class="visuals-single">
+                <div class="info-container glass-card">
+                    <h3>System Environment</h3>
+                    <div class="info-item">
+                        <span>CPU Cores Detected:</span>
+                        <span id="coreCount" class="info-val">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span>Verification Status:</span>
+                        <span id="verifyStatus" class="info-val">-</span>
+                    </div>
+                    <div class="terminal-box">
+                        <div class="terminal-header">Console Output</div>
+                        <pre id="rawOutput">Ready to benchmark...</pre>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Parallel Matrix Multiplication Project | Built for PDP Excellence</p>
+        </footer>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

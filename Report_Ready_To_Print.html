@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parallel Matrix Multiplication Report</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --text-color: #333;
+            --bg-page: #f4f4f4;
+            --bg-content: #ffffff;
+        }
+
+        @media print {
+            body {
+                background-color: white !important;
+                margin: 0;
+            }
+            .page {
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 1in !important;
+                page-break-after: always;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-page);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .page {
+            background: var(--bg-content);
+            width: 8.5in;
+            min-height: 11in;
+            padding: 50px 80px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+        }
+
+        .title-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            text-align: center;
+        }
+
+        .header {
+            margin-top: 50px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.2em;
+        }
+
+        .header h2 {
+            font-weight: 400;
+            margin-top: 0;
+            color: var(--accent-color);
+        }
+
+        .details {
+            margin: 50px 0;
+            border-top: 2px solid var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding: 20px 0;
+        }
+
+        .details p {
+            font-size: 1.2em;
+            margin: 5px 0;
+        }
+
+        .footer {
+            margin-bottom: 50px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f8f9fa;
+        }
+
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .highlight {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .btn-print {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .btn-print:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+    <button class="btn-print no-print" onclick="window.print()">Print to PDF</button>
+
+    <!-- Page 1: Title -->
+    <div class="page">
+        <div class="title-page">
+            <div class="header">
+                <h1>PROJECT REPORT</h1>
+                <p style="font-size: 1.5em; color: #7f8c8d;">on</p>
+                <h2>Parallel Matrix Multiplication using Native Windows Threads</h2>
+            </div>
+
+            <div class="details">
+                <p><strong>Course:</strong> Parallel Computation and Distributed System</p>
+                <p><strong>Department:</strong> Computer Science and Engineering (CSE)</p>
+            </div>
+
+            <div style="margin: 40px 0;">
+                <h3>Submitted By:</h3>
+                <table style="width: 80%; margin: 0 auto; border: none;">
+                    <tr style="border: none;">
+                        <td style="border: none; font-size: 1.2em;"><strong>Suarabh Singh</strong></td>
+                        <td style="border: none; font-size: 1.2em; text-align: right;">Roll: cse2023021152</td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td style="border: none; font-size: 1.2em;"><strong>Ram Nayak</strong></td>
+                        <td style="border: none; font-size: 1.2em; text-align: right;">Roll: cse2023021156</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="footer">
+                <p><strong>Date:</strong> April 13, 2026</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 2: Content -->
+    <div class="page">
+        <h2>1. Abstract</h2>
+        <p>This project explores the implementation of parallel algorithms for matrix multiplication, a core operation in scientific computing and AI. We utilize the <strong>Native Windows Threading API (<code>windows.h</code>)</strong> to distribute computational load across multiple processor cores. Additionally, we provide a <strong>Full-Stack Web Dashboard</strong> built with Node.js to visualize performance metrics, including speedup and efficiency, in real-time.</p>
+
+        <h2>2. Introduction</h2>
+        <p>Parallel computing is essential for handling large-scale datasets where sequential processing becomes a bottleneck. Matrix multiplication has a time complexity of O(N³), making it an ideal candidate for parallelization.</p>
+        
+        <h3>Why Native Windows Threads?</h3>
+        <p>While libraries like OpenMP or MPI are popular, working with native Windows threads (<code>CreateThread</code>) provides deeper insight into kernel-level thread management, dynamic workload distribution, and hardware-specific optimization.</p>
+
+        <h2>3. Project Architecture</h2>
+        <p>The project follows a decoupled architecture consisting of a high-performance C++ core and a modern web-based monitoring system.</p>
+        <ul>
+            <li><strong>Backend (C++):</strong> Handles heavy computation using parallel loops and Windows threads.</li>
+            <li><strong>Web Server (Node.js):</strong> Orchestrates the execution and parses metrics from stdout.</li>
+            <li><strong>Frontend:</strong> Provides an interactive UI for experimenting with matrix sizes and viewing results.</li>
+        </ul>
+    </div>
+
+    <!-- Page 3: Implementation -->
+    <div class="page">
+        <h2>4. Methodology & Implementation</h2>
+        <h3>A. Parallel Algorithm (The "Row-Chunk" Approach)</h3>
+        <p>We divide the rows of Matrix A among the available logical cores to minimize overhead.</p>
+        <ul>
+            <li><strong>Step 1:</strong> Detect hardware cores using <code>GetSystemInfo</code>.</li>
+            <li><strong>Step 2:</strong> Calculate <code>rows_per_thread = N / num_cores</code>.</li>
+            <li><strong>Step 3:</strong> Assign each thread a range <code>[start_row, end_row)</code>.</li>
+            <li><strong>Step 4:</strong> Synchronize using <code>WaitForMultipleObjects</code>.</li>
+        </ul>
+
+        <h2>5. Performance Metrics (Experimental Results)</h2>
+        <p>The following benchmarks were recorded on a 12-core system for a 1000x1000 matrix.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Sequential</th>
+                    <th>Parallel (12 Threads)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Execution Time</strong></td>
+                    <td>16.76 s</td>
+                    <td>2.45 s</td>
+                </tr>
+                <tr>
+                    <td><strong>Speedup</strong></td>
+                    <td>1.0x</td>
+                    <td class="highlight">6.85x</td>
+                </tr>
+                <tr>
+                    <td><strong>Efficiency</strong></td>
+                    <td>100%</td>
+                    <td>57.1%</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Observations:</h3>
+        <p>The speedup clearly demonstrates that parallelizing the row operations significantly reduces execution time. The efficiency loss is primarily due to memory bandwidth limits and thread context switching.</p>
+    </div>
+
+    <!-- Page 4: Conclusion & Viva -->
+    <div class="page">
+        <h2>6. The Web Dashboard</h2>
+        <p>To make the project accessible, we developed a real-time monitoring dashboard that allows users to test various matrix sizes and view performance analytics instantly.</p>
+
+        <h2>7. Conclusion</h2>
+        <p>The project successfully demonstrates the power of parallel computing. By offloading calculations to multiple cores, we achieved a significant reduction in processing time (7x speedup).</p>
+
+        <hr>
+
+        <h2>8. Viva Questions & Answers</h2>
+        <p><strong>Q1: What is the main advantage of Parallel Matrix Multiplication?</strong><br>
+        <em>A: It reduces the wall-clock time required for large computations by utilizing multiple CPU cores simultaneously.</em></p>
+
+        <p><strong>Q2: What is "Speedup"?</strong><br>
+        <em>A: Speedup is the ratio of sequential execution time to parallel execution time: S = Ts / Tp.</em></p>
+
+        <p><strong>Q3: Why isn't efficiency 100%?</strong><br>
+        <em>A: Factors like thread creation overhead, synchronization wait times, and memory access contention limit perfect scaling.</em></p>
+        
+        <p><strong>Q4: What role does windows.h play here?</strong><br>
+        <em>A: It provides the API for creating (CreateThread), managing, and synchronizing threads on the Windows platform.</em></p>
+    </div>
+
+</body>
+</html>
