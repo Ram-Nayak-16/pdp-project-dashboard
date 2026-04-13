@@ -82,14 +82,20 @@ void multiplyParallel(const vector<double>& A,
     // Zero out C
     fill(C.begin(), C.end(), 0.0);
 
+    // Skip parallelization if size is below threshold to avoid overhead
     if (size < PARALLEL_THRESHOLD) {
         multiplySequential(A, B, C, size);
         return;
     }
 
 #ifdef _OPENMP
-    // Modern OpenMP Implementation
-    #pragma omp parallel for schedule(static)
+    // Optimize Thread Count for Cloud:
+    // Throttled CPUs often perform better with fewer threads (2-4) 
+    // to avoid context switching overhead.
+    int max_threads = omp_get_max_threads();
+    int target_threads = (max_threads > 4) ? 4 : max_threads;
+    
+    #pragma omp parallel for num_threads(target_threads) schedule(static, 8) if (size >= PARALLEL_THRESHOLD)
     for (int i = 0; i < size; i++) {
         for (int k = 0; k < size; k++) {
             double temp = A[i * size + k];
