@@ -16,6 +16,7 @@ A high-performance Computing (HPC) project demonstrating **Parallel Matrix Multi
 ## ✨ Features
 - **Hybrid Parallel Core**: Uses Native Windows Threads locally and **OpenMP** on the cloud for maximum performance.
 - **Real-time Analytics**: Visualizes Sequential vs. Parallel execution times, Speedup Factors, and Efficiency.
+- **Interactive Performance Charts**: Built-in Chart.js integration for visual comparison of execution metrics.
 - **Glassmorphism UI**: A premium, modern dashboard built with Vanilla CSS and JS.
 - **System Detection**: Automatically detects hardware cores to optimize thread distribution.
 
