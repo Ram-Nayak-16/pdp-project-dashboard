@@ -9,6 +9,83 @@ document.addEventListener('DOMContentLoaded', () => {
     const verifyStatusEl = document.getElementById('verifyStatus');
     const rawOutputEl = document.getElementById('rawOutput');
     const btnLoader = document.getElementById('btnLoader');
+    const perfChartCtx = document.getElementById('perfChart').getContext('2d');
+    let perfChart;
+
+    const initChart = () => {
+        perfChart = new Chart(perfChartCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Sequential', 'Parallel'],
+                datasets: [{
+                    label: 'Execution Time (seconds)',
+                    data: [0, 0],
+                    backgroundColor: [
+                        'rgba(0, 210, 255, 0.4)',
+                        'rgba(146, 254, 157, 0.4)'
+                    ],
+                    borderColor: [
+                        '#00d2ff',
+                        '#92fe9d'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 12, 41, 0.9)',
+                        titleFont: { family: 'Outfit', size: 14 },
+                        bodyFont: { family: 'Outfit', size: 13 },
+                        padding: 12,
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#b0b0b0',
+                            font: { family: 'Outfit' }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#ffffff',
+                            font: { family: 'Outfit', weight: '600' }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 1500,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+    };
+
+    const updateChart = (seqTime, parTime) => {
+        if (!perfChart) return;
+        perfChart.data.datasets[0].data = [seqTime, parTime];
+        perfChart.update();
+    };
+
+    initChart();
 
     const runBenchmark = async () => {
         const size = matrixSizeInput.value;
@@ -36,6 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
             animateValue(parTimeEl, data.parallelTime, 's');
             animateValue(speedupEl, data.speedup, 'x');
             animateValue(efficiencyEl, data.efficiency, '%');
+
+            // Update Graph
+            updateChart(data.sequentialTime, data.parallelTime);
 
             coreCountEl.textContent = data.cores;
             verifyStatusEl.textContent = data.verified ? '✅ SUCCESS' : '❌ FAILED';

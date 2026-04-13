@@ -184,13 +184,22 @@ input:focus {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 1.5rem;
+    margin-top: 1rem;
 }
 
 .chart-container h3, .info-container h3 {
-    margin-bottom: 1.5rem;
-    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    font-size: 1.25rem;
     border-left: 4px solid var(--primary);
     padding-left: 1rem;
+    color: var(--text-primary);
+}
+
+.canvas-wrapper {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    margin-top: 1rem;
 }
 
 .info-item {
