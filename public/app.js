@@ -118,6 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
             updateChart(data.sequentialTime, data.parallelTime);
 
             coreCountEl.textContent = data.cores;
+            if (document.getElementById('engineMode')) {
+                document.getElementById('engineMode').textContent = data.engine;
+            }
             verifyStatusEl.textContent = data.verified ? '✅ SUCCESS' : '❌ FAILED';
             verifyStatusEl.style.color = data.verified ? '#92fe9d' : '#ff4b2b';
             

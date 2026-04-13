@@ -8,18 +8,16 @@
 
 #ifdef _OPENMP
     #include <omp.h>
-#else
-    #ifdef _WIN32
-        #include <windows.h>
-    #endif
+#endif
+
+#ifdef _WIN32
+    #include <windows.h>
 #endif
 
 using namespace std;
 
-// Threshold for parallel execution (adjusted to 1200 to avoid throttled CPU overhead)
 const int PARALLEL_THRESHOLD = 1200;
 
-// Structure to pass data to threads (for Windows fallback)
 struct ThreadData {
     const vector<double>* A;
     const vector<double>* B;
@@ -37,12 +35,23 @@ DWORD WINAPI multiplyWorkerWin(LPVOID lpParam) {
     const vector<double>& B = *(data->B);
     vector<double>& C = *(data->C);
 
-    // Optimized IKJ order for cache efficiency even in thread workers
-    for (int i = data->start_row; i < data->end_row; i++) {
-        for (int k = 0; k < size; k++) {
-            double temp = A[i * size + k];
-            for (int j = 0; j < size; j++) {
-                C[i * size + j] += temp * B[k * size + j];
+    const int BLOCK_SIZE = 64; 
+
+    for (int i = data->start_row; i < data->end_row; i += BLOCK_SIZE) {
+        for (int k = 0; k < size; k += BLOCK_SIZE) {
+            for (int j = 0; j < size; j += BLOCK_SIZE) {
+                int i_end = min(i + BLOCK_SIZE, data->end_row);
+                int k_end = min(k + BLOCK_SIZE, size);
+                int j_end = min(j + BLOCK_SIZE, size);
+
+                for (int ii = i; ii < i_end; ii++) {
+                    for (int kk = k; kk < k_end; kk++) {
+                        double temp = A[ii * size + kk];
+                        for (int jj = j; jj < j_end; jj++) {
+                            C[ii * size + jj] += temp * B[kk * size + jj];
+                        }
+                    }
+                }
             }
         }
     }
@@ -50,21 +59,17 @@ DWORD WINAPI multiplyWorkerWin(LPVOID lpParam) {
 }
 #endif
 
-// Function to initialize matrix with random values (Flat implementation)
 void initializeMatrix(vector<double>& matrix, int size) {
     for (int i = 0; i < size * size; i++) {
         matrix[i] = (double)(rand() % 10);
     }
 }
 
-// Optimized Sequential Matrix Multiplication (IKJ Order)
 void multiplySequential(const vector<double>& A, 
                         const vector<double>& B, 
                         vector<double>& C, int size) {
-    // Zero out C
     fill(C.begin(), C.end(), 0.0);
     
-    // IKJ order: Best for cache because innermost loop accesses B and C row-wise (contiguously)
     for (int i = 0; i < size; i++) {
         for (int k = 0; k < size; k++) {
             double temp = A[i * size + k];
@@ -75,37 +80,58 @@ void multiplySequential(const vector<double>& A,
     }
 }
 
-// Optimized Parallel Matrix Multiplication (IKJ + OpenMP/Threads)
+const int THRESHOLD_LIGHT = 800;   
+const int THRESHOLD_HEAVY = 1500;  
+
 void multiplyParallel(const vector<double>& A, 
                       const vector<double>& B, 
                       vector<double>& C, int size) {
-    // Zero out C
     fill(C.begin(), C.end(), 0.0);
 
-    // Skip parallelization if size is below threshold to avoid overhead
-    if (size < PARALLEL_THRESHOLD) {
+    if (size < THRESHOLD_LIGHT) {
+        cout << "Mode: [SEQUENTIAL-LIGHT]" << endl;
         multiplySequential(A, B, C, size);
         return;
     }
 
 #ifdef _OPENMP
-    // Optimize Thread Count for Cloud:
-    // Throttled CPUs often perform better with fewer threads (2-4) 
-    // to avoid context switching overhead.
-    int max_threads = omp_get_max_threads();
-    int target_threads = (max_threads > 4) ? 4 : max_threads;
+    int threads = 2;
+    int block_size = 32;
+    string mode_name = "LIGHT-PARALLEL";
+
+    if (size >= THRESHOLD_HEAVY) {
+        threads = 4;
+        block_size = 64;
+        mode_name = "HEAVY-PARALLEL (SIMD)";
+    }
+
+    int system_max = omp_get_max_threads();
+    if (threads > system_max) threads = system_max;
     
-    #pragma omp parallel for num_threads(target_threads) schedule(static, 8) if (size >= PARALLEL_THRESHOLD)
-    for (int i = 0; i < size; i++) {
-        for (int k = 0; k < size; k++) {
-            double temp = A[i * size + k];
-            for (int j = 0; j < size; j++) {
-                C[i * size + j] += temp * B[k * size + j];
+    cout << "Mode: [" << mode_name << "] Threads: " << threads << endl;
+
+    #pragma omp parallel for num_threads(threads) schedule(static)
+    for (int i = 0; i < size; i += block_size) {
+        for (int k = 0; k < size; k += block_size) {
+            for (int j = 0; j < size; j += block_size) {
+                int i_end = min(i + block_size, size);
+                int k_end = min(k + block_size, size);
+                int j_end = min(j + block_size, size);
+
+                for (int ii = i; ii < i_end; ii++) {
+                    for (int kk = k; kk < k_end; kk++) {
+                        double temp = A[ii * size + kk];
+                        #pragma omp simd
+                        for (int jj = j; jj < j_end; jj++) {
+                            C[ii * size + jj] += temp * B[kk * size + jj];
+                        }
+                    }
+                }
             }
         }
     }
 #elif defined(_WIN32)
-    // Windows Native Threads Fallback
+    cout << "Mode: [WINDOWS-NATIVE] Tiled" << endl;
     SYSTEM_INFO sysinfo;
     GetSystemInfo(&sysinfo);
     int num_threads = sysinfo.dwNumberOfProcessors;
@@ -126,12 +152,10 @@ void multiplyParallel(const vector<double>& A,
     for (int i = 0; i < num_threads; i++) CloseHandle(threads[i]);
     delete[] threads; delete[] data;
 #else
-    // Generic fallback
     multiplySequential(A, B, C, size);
 #endif
 }
 
-// Function to verify if two matrices are equal
 bool verify(const vector<double>& C1, 
             const vector<double>& C2, int size) {
     for (int i = 0; i < size * size; i++) {
@@ -162,14 +186,12 @@ int main(int argc, char* argv[]) {
     initializeMatrix(A, size);
     initializeMatrix(B, size);
 
-    // Timing Sequential
     auto start_seq = chrono::high_resolution_clock::now();
     multiplySequential(A, B, C_seq, size);
     auto end_seq = chrono::high_resolution_clock::now();
     chrono::duration<double> time_seq = end_seq - start_seq;
     cout << "Sequential Time: " << fixed << setprecision(4) << time_seq.count() << " seconds" << endl;
 
-    // Timing Parallel
     auto start_par = chrono::high_resolution_clock::now();
     multiplyParallel(A, B, C_par, size);
     auto end_par = chrono::high_resolution_clock::now();
